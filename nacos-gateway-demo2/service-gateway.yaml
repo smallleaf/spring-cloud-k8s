@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: service-gateway
+  name: service-gateway
+spec:
+  ports:
+    - name: http
+      port: 18085
+      protocol: TCP
+      targetPort: 18085
+  selector:
+    app: service-gateway
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-gateway
+  template:
+    metadata:
+      labels:
+        app: service-gateway
+    spec:
+      containers:
+        - name: service-gateway
+          image: 578986218/service-gateway:latest
+          ports:
+            - containerPort: 18085
+
+
+---
+#ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: service-gateway
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: api.yesheng.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service-gateway
+                port:
+                  number: 18085
+
+
