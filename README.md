@@ -1,0 +1,1 @@
+spring-cloud-alibaba-nacos相关测试例子，用k8s来部署
